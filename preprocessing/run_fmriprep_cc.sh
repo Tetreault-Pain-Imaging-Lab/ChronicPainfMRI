@@ -26,28 +26,45 @@
 #SBATCH --output="/home/ludoal/scratch/ChronicPainfMRI/outputs/fmriprep/slurm-%A.out"
 
 
-
-
 my_fmriprep_img='/home/ludoal/projects/def-pascalt-ab/ludoal/dev_scil/containers/fmriprep_23.2.3.sif' # or .img
 my_input='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/data_raw_for_test'
 my_output='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/fmriprep/results'
 my_work="${my_output}/work"
-
+my_templateflow_path='/home/ludoal/projects/def-pascalt-ab/ludoal/dev_tpil/tools/templateflow'
 fs_dir='/home/pabaua/projects/def-pascalt-ab/pabaua/dev_tpil/data/freesurfer_v1'
 bids_filter='/home/pabaua/projects/def-pascalt-ab/pabaua/dev_tpil/tpil_dmri/script_local/fmriprep_bids_filter_v1.json'
 
-my_licence_fs='/home/pabaua/projects/def-pascalt-ab/pabaua/dev_scil/containers/license.txt'
+my_licence_fs='/home/ludoal/scratch/ChronicPainfMRI/license.txt'
 
 # v1  remove 004 and 035
 my_participants='002 006 007 008'
 
+## Create a virtual environment to install Templateflow
+module load StdEnv/2020 apptainer/1.1.8 python
+virtualenv --no-download $SLURM_TMPDIR/env
+source $SLURM_TMPDIR/env/bin/activate
+pip install --no-index --upgrade pip
+export TEMPLATEFLOW_HOME=$my_templateflow_path
+if [ ! -d $my_templateflow_path ]; then 
+    mkdir -p $my_templateflow_path
+fi
 
-module load StdEnv/2020 apptainer/1.1.8
+pip install -r -v requirements.txt
+python /home/ludoal/scratch/ChronicPainfMRI/utils/load_templates.py #downloads the templates used in fmriprep
 
 # https://neurostars.org/t/fmriprep-in-compute-canada/28474/6
-export APPTAINERENV_TEMPLATEFLOW_HOME=/home/pabaua/projects/def-pascalt-ab/pabaua/dev_tpil/data/templateflow
-
+export APPTAINERENV_TEMPLATEFLOW_HOME=$my_templateflow_path
 export APPTAINERENV_FS_LICENSE=$my_licence_fs
 apptainer exec --cleanenv -B /project:/project -B /scratch:/scratch $my_fmriprep_img env | grep FS_LICENSE
-apptainer run --cleanenv -B /project:/project -B /scratch:/scratch $my_fmriprep_img $my_input $my_output participant --participant-label $my_participants -w $my_work --output-spaces T1w MNI152NLin2009cSym --cifti-output 91k --bids-filter-file $bids_filter --fs-subjects-dir $fs_dir
-#done
+
+# apptainer run --cleanenv \
+#     -B /project:/project -B /scratch:/scratch \
+#     $my_fmriprep_img $my_input $my_output participant \
+#     --participant-label $my_participants \
+#     -w $my_work \
+#     --output-spaces T1w MNI152NLin2009cSym \
+#     --cifti-output 91k \
+#     --bids-filter-file $bids_filter \
+#     --fs-subjects-dir $fs_dir
+
+# #done
