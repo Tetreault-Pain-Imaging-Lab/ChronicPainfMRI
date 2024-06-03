@@ -39,20 +39,46 @@ else
     apptainer build "$fmriprep_img" docker://nipreps/fmriprep:23.2.3
 fi
 
-## FREESURFER ...
+## FREESURFER ... (freesurfer/freesurfer:7.2.0)
+
+freesurfer_img="freesurfer_7.2.0.sif"
+
+# Find the freesurfer_img and save the result in a variable
+file_path=$(find "$tools_path" -type f -name "$freesurfer_img" -print -quit)
+
+if [ -n "$file_path" ]; then
+    echo "File $freesurfer_img exists at: $file_path, moving it to $tools_path/containers "
+    mv $file_path $tools_path/containers
+else
+    echo "File $freesurfer_img does not exist in $tools_path or its subdirectories."
+    
+    if [ ! -d "$tools_path/containers" ];then 
+        mkdir -p $tools_path/containers
+    fi
+
+    cd $tools_path/containers
+    echo "Building $freesurfer_img in $tools_path/containers  ..."
+    apptainer build "$freesurfer_img" docker://freesurfer/freesurfer:7.2.0
+fi
 
 
 ## TEMPLATEFLOW
 
 # create a temporary virtual environment to install the templateflow package
-module load python
-ENVDIR='/home/ludoal/ENV/templateflow'
-virtualenv --no-download $ENVDIR
-source $ENVDIR/bin/activate
-pip install --no-index --upgrade pip
-export TEMPLATEFLOW_HOME="$tools_path/templateflow"
-pip install -v -r requirements.txt
-python $utils_path/load_templates.py # Downloads the templates used in fmriprep
+if [ ! -d $tools_path/templateflow ]; then
+    # create a temporary virtual environment to install the templateflow package
+    module load python
+    ENVDIR="$HOME/ENV/templateflow"
+    virtualenv --no-download $ENVDIR
+    source $ENVDIR/bin/activate
+    pip install --no-index --upgrade pip
+    export TEMPLATEFLOW_HOME="$tools_path/templateflow"
+    pip install -v -r requirements.txt
+    python $utils_path/load_templates.py # Downloads the templates used in fmriprep
+    
+else 
+    echo "directory $tools_path/templateflow already exists, skipping the installation"
+fi
 
 rm -rf $ENVDIR
 

@@ -6,7 +6,7 @@
 
 
 #SBATCH --job-name=fmriprep
-#SBATCH --time=30:00:00
+#SBATCH --time=5:00:00
 #SBATCH --nodes=1              # --> Generally depends on your nb of subjects.
                                # See the comment for the cpus-per-task. One general rule could be
                                # that if you have more subjects than cores/cpus (ex, if you process 38
@@ -25,35 +25,39 @@
 #SBATCH --mail-type=ALL
 #SBATCH --output="/home/ludoal/scratch/ChronicPainfMRI/outputs/fmriprep/slurm-%A.out"
 
-
+## Variables to set manually
 my_fmriprep_img='/home/ludoal/projects/def-pascalt-ab/ludoal/dev_tpil/tools/fmriprep_23.2.3.sif' # or .img
 my_input='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/data_raw_for_test'
 my_output='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/fmriprep/results'
 my_work="${my_output}/work"
 my_templateflow_path='/home/ludoal/projects/def-pascalt-ab/ludoal/dev_tpil/tools/templateflow'
-fs_dir='/home/pabaua/projects/def-pascalt-ab/pabaua/dev_tpil/data/freesurfer_v1'
-bids_filter='/home/pabaua/projects/def-pascalt-ab/pabaua/dev_tpil/tpil_dmri/script_local/fmriprep_bids_filter_v1.json'
-
+fs_dir='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/freesurfer_v1'
+bids_filter='/home/ludoal/scratch/ChronicPainfMRI/preprocessing/fmriprep_bids_filter_v1.json'
 # get your license by registering here : https://surfer.nmr.mgh.harvard.edu/registration.html
 my_licence_fs='/home/ludoal/scratch/ChronicPainfMRI/license.txt'
 
-# v1  remove 004 and 035
-my_participants='002 006 007 008'
+# # v1  remove 004 and 035
+# my_participants='002 006 007 008'
 
+
+module load apptainer 
 
 # https://neurostars.org/t/fmriprep-in-compute-canada/28474/6
 export APPTAINERENV_TEMPLATEFLOW_HOME=$my_templateflow_path
 export APPTAINERENV_FS_LICENSE=$my_licence_fs
 apptainer exec --cleanenv -B /project:/project -B /scratch:/scratch $my_fmriprep_img env | grep FS_LICENSE
 
-# apptainer run --cleanenv \
-#     -B /project:/project -B /scratch:/scratch \
-#     $my_fmriprep_img $my_input $my_output participant \
-#     --participant-label $my_participants \
-#     -w $my_work \
-#     --output-spaces T1w MNI152NLin2009cSym \
-#     --cifti-output 91k \
-#     --bids-filter-file $bids_filter \
-#     --fs-subjects-dir $fs_dir
+## Valid subjects
+my_participants=$(bash utils/get_subs_for_visit.sh '/home/ludoal/scratch/tpil_data/BIDS_longitudinal/data_raw_for_test' v1)
 
-# #done
+
+##  Command
+apptainer run --cleanenv \
+    -B /project:/project -B /scratch:/scratch \
+    $my_fmriprep_img $my_input $my_output participant \
+    --participant-label $my_participants \
+    -w $my_work \
+    --output-spaces T1w MNI152NLin2009cSym \
+    --cifti-output 91k \
+    --bids-filter-file $bids_filter \
+    --fs-subjects-dir $fs_dir
