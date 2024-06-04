@@ -36,7 +36,7 @@ bids_filter='/home/ludoal/scratch/ChronicPainfMRI/preprocessing/fmriprep_bids_fi
 
 # Automatic variables
 my_work="${my_output}/work"
-repos_path=$(dirname $(dirname $(realpath "$0")))
+repos_path=$(dirname $(dirname $(realpath "${BASH_SOURCE[0]}")))
 my_licence_fs="$repos_path/license.txt"
 
 # # v1  remove 004 and 035

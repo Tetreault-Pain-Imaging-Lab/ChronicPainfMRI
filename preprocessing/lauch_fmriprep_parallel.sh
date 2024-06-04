@@ -26,7 +26,8 @@ FS_DIR='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/freesurfer_v1'
 # Path to the BIDS filter file
 BIDS_FILTER='/home/ludoal/scratch/ChronicPainfMRI/preprocessing/fmriprep_bids_filter_v1.json'
 # Path to the repository (for utility scripts and license file)
-REPOS_PATH=$(dirname $(dirname $(realpath "$0")))
+REPOS_PATH=$(dirname $(dirname $(realpath "${BASH_SOURCE[0]}")))
+
 # Path to the FreeSurfer license file
 LICENSE_FS="$REPOS_PATH/license.txt"
 
