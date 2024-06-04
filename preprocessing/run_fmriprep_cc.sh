@@ -29,12 +29,15 @@
 my_fmriprep_img='/home/ludoal/projects/def-pascalt-ab/ludoal/dev_tpil/tools/containers/fmriprep_23.2.3.sif' # or .img
 my_input='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/data_raw_for_test'
 my_output='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/fmriprep/results'
-my_work="${my_output}/work"
 my_templateflow_path='/home/ludoal/projects/def-pascalt-ab/ludoal/dev_tpil/tools/templateflow'
 fs_dir='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/freesurfer_v1'
 bids_filter='/home/ludoal/scratch/ChronicPainfMRI/preprocessing/fmriprep_bids_filter_v1.json'
 # get your license by registering here : https://surfer.nmr.mgh.harvard.edu/registration.html
-my_licence_fs='/home/ludoal/scratch/ChronicPainfMRI/license.txt'
+
+# Automatic variables
+my_work="${my_output}/work"
+repos_path=$(dirname $(dirname $(realpath "$0")))
+my_licence_fs="$repos_path/license.txt"
 
 # # v1  remove 004 and 035
 # my_participants='002 006 007 008'
@@ -45,11 +48,13 @@ module load apptainer
 # https://neurostars.org/t/fmriprep-in-compute-canada/28474/6
 export APPTAINERENV_TEMPLATEFLOW_HOME=$my_templateflow_path
 export APPTAINERENV_FS_LICENSE=$my_licence_fs
-apptainer exec --cleanenv -B /project:/project -B /scratch:/scratch $my_fmriprep_img env | grep FS_LICENSE
+
+# To check if the license is accesible to fmriprep use this line :
+# apptainer exec --cleanenv -B /project:/project -B /scratch:/scratch $my_fmriprep_img env | grep FS_LICENSE
 
 ## Valid subjects
-utils_path="$(dirname "$(realpath "$0")")"
-my_participants=$(bash $utils_path/get_subs_for_visit.sh $my_input v1)
+my_participants=$(bash $repos_path/utils/get_subs_for_visit.sh $my_input v1)
+echo -e "Valid subjects for v1 are :\n$my_participants\n"  
 
 
 ##  Command
