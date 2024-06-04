@@ -59,7 +59,6 @@ echo -e "Valid subjects for v1 are :\n$my_participants\n"
 
 ##  Command
 apptainer run --cleanenv \
-    # -B /project:/project -B /scratch:/scratch \ # may not be necessary 
     $my_fmriprep_img $my_input $my_output participant \
     --participant-label $my_participants \
     -w $my_work \
