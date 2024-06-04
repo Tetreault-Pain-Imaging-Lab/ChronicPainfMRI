@@ -26,6 +26,6 @@ for sub_folder in "$data_path"/sub* ; do
 
 done
 
-    # Printing all valid subject numbers to file 
+    # Outputting valid subject as a space seperated list 
     echo $sub_nums 
   

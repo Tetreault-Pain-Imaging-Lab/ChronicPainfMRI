@@ -26,7 +26,7 @@
 #SBATCH --output="/home/ludoal/scratch/ChronicPainfMRI/outputs/fmriprep/slurm-%A.out"
 
 ## Variables to set manually
-my_fmriprep_img='/home/ludoal/projects/def-pascalt-ab/ludoal/dev_tpil/tools/fmriprep_23.2.3.sif' # or .img
+my_fmriprep_img='/home/ludoal/projects/def-pascalt-ab/ludoal/dev_tpil/tools/containers/fmriprep_23.2.3.sif' # or .img
 my_input='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/data_raw_for_test'
 my_output='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/fmriprep/results'
 my_work="${my_output}/work"
@@ -48,12 +48,13 @@ export APPTAINERENV_FS_LICENSE=$my_licence_fs
 apptainer exec --cleanenv -B /project:/project -B /scratch:/scratch $my_fmriprep_img env | grep FS_LICENSE
 
 ## Valid subjects
-my_participants=$(bash utils/get_subs_for_visit.sh '/home/ludoal/scratch/tpil_data/BIDS_longitudinal/data_raw_for_test' v1)
+utils_path="$(dirname "$(realpath "$0")")"
+my_participants=$(bash $utils_path/get_subs_for_visit.sh $my_input v1)
 
 
 ##  Command
 apptainer run --cleanenv \
-    -B /project:/project -B /scratch:/scratch \
+    # -B /project:/project -B /scratch:/scratch \ # may not be necessary 
     $my_fmriprep_img $my_input $my_output participant \
     --participant-label $my_participants \
     -w $my_work \

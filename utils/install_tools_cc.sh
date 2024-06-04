@@ -64,22 +64,18 @@ fi
 
 ## TEMPLATEFLOW
 
-# create a temporary virtual environment to install the templateflow package
-if [ ! -d $tools_path/templateflow ]; then
-    # create a temporary virtual environment to install the templateflow package
-    module load python
-    ENVDIR="$HOME/ENV/templateflow"
+# create a virtual environment to install the templateflow package
+module load python
+ENVDIR="$HOME/ENV/templateflow"
+if [ ! -f $ENVDIR ]; then
     virtualenv --no-download $ENVDIR
     source $ENVDIR/bin/activate
     pip install --no-index --upgrade pip
     export TEMPLATEFLOW_HOME="$tools_path/templateflow"
-    pip install -v -r requirements.txt
-    python $utils_path/load_templates.py # Downloads the templates used in fmriprep
-    
+    pip install -v -r requirements.txt 
 else 
-    echo "directory $tools_path/templateflow already exists, skipping the installation"
+    source $ENVDIR/bin/activate
 fi
 
-rm -rf $ENVDIR
-
-
+# Downloads the templates used in fmriprep
+python $utils_path/load_templates.py 
