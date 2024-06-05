@@ -78,4 +78,5 @@ else
 fi
 
 # Downloads the templates used in fmriprep
+export TEMPLATEFLOW_HOME="$tools_path/templateflow"
 python $utils_path/load_templates.py 

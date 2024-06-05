@@ -33,31 +33,31 @@ BIDS_FILTERS='/home/ludoal/scratch/ChronicPainfMRI/bids_filters'
 LICENSE_FS="$REPOS_PATH/license.txt"
 
 # Environment variables for TemplateFlow and FreeSurfer license
-export APPTAINERENV_TEMPLATEFLOW_HOME='/templateflow'
+export APPTAINERENV_TEMPLATEFLOW_HOME=$TEMPLATEFLOW_PATH
 export APPTAINERENV_FS_LICENSE=$LICENSE_FS
 
 ## Function to run fmriprep for a given subject and visit
 # Arguments:
 #   $1 - Visit identifier (e.g., v1, v2, v3)
-#   $2 - Subject identifier
+#   $2 - Space separeted list of subject identifiers 
 run_fmriprep() {
     local visit=$1
-    local subject=$2
+    local participants=$2
     local bids_filter="${BIDS_FILTERS}/fmriprep_bids_filter_${visit}.json"
-    
+    local num_subjects=$(echo "$participants" | wc -w)
     printf "Running fmriprep for visit %s and subject %s\n" "$visit" "$subject"
 
     # Submit the fmriprep job to the scheduler with specified resources
-    sbatch --job-name=fmriprep_${visit}_${subject} \
+    sbatch --job-name=fmriprep_${visit} \
            --output="/home/ludoal/scratch/ChronicPainfMRI/outputs/fmriprep_parallel/slurm-%A_%x.out" \
            --nodes=1 \
            --cpus-per-task=16 \
            --mem=10G \
-           --time=3:00:00 <<EOF
+           --time=3:00:00 
+           --array <<EOF
 #!/bin/bash
 module load apptainer
 apptainer run --cleanenv \
-    -B $TEMPLATEFLOW_PATH:/templateflow
     $FMRIPREP_IMG $INPUT_DIR $OUTPUT_DIR participant \
     --participant-label $subject \
     -w "${OUTPUT_DIR}/work" \
@@ -82,12 +82,11 @@ main() {
             continue
         fi
         
-        # Loop through each participant and run fmriprep
-        for subject in $participants; do
-            run_fmriprep "$visit" "$subject" || printf "Failed to submit job for visit %s and subject %s\n" "$visit" "$subject" >&2
-            sleep 1  # Add a 1-second wait time between job submissions
+        
+        run_fmriprep "$visit" "$participants" || printf "Failed to submit job for visit %s\n" "$visit" >&2
+        sleep 1  # Add a 1-second wait time between job submissions
 
-        done
+
         sleep 1
     done
 }

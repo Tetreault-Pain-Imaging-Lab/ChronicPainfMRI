@@ -6,7 +6,7 @@
 
 
 #SBATCH --job-name=fmriprep
-#SBATCH --time=5:00:00
+#SBATCH --time=30:00:00
 #SBATCH --nodes=1              # --> Generally depends on your nb of subjects.
                                # See the comment for the cpus-per-task. One general rule could be
                                # that if you have more subjects than cores/cpus (ex, if you process 38
@@ -28,19 +28,16 @@
 ## Variables to set manually
 my_fmriprep_img='/home/ludoal/projects/def-pascalt-ab/ludoal/dev_tpil/tools/containers/fmriprep_23.2.3.sif' # or .img
 my_input='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/data_raw_for_test'
-my_output='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/fmriprep/results'
+my_output='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/2024-06-05_fmriprep/results'
 my_templateflow_path='/home/ludoal/projects/def-pascalt-ab/ludoal/dev_tpil/tools/templateflow'
 fs_dir='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/freesurfer_v1'
-bids_filter='/home/ludoal/scratch/ChronicPainfMRI/preprocessing/fmriprep_bids_filter_v1.json'
+bids_filter='/home/ludoal/scratch/ChronicPainfMRI/bids_filters/fmriprep_bids_filter_v1.json'
+repos_path='/home/ludoal/scratch/ChronicPainfMRI'
 # get your license by registering here : https://surfer.nmr.mgh.harvard.edu/registration.html
 
 # Automatic variables
 my_work="${my_output}/work"
-repos_path=$(dirname $(dirname $(realpath "${BASH_SOURCE[0]}")))
 my_licence_fs="$repos_path/license.txt"
-
-# # v1  remove 004 and 035
-# my_participants='002 006 007 008'
 
 
 module load apptainer 
@@ -52,7 +49,7 @@ export APPTAINERENV_FS_LICENSE=$my_licence_fs
 # To check if the license is accesible to fmriprep use this line :
 # apptainer exec --cleanenv -B /project:/project -B /scratch:/scratch $my_fmriprep_img env | grep FS_LICENSE
 
-## Valid subjects
+## Valid subjects ( v1  remove 004 and 035)
 my_participants=$(bash $repos_path/utils/get_subs_for_visit.sh $my_input v1)
 echo -e "Valid subjects for v1 are :\n$my_participants\n"  
 
