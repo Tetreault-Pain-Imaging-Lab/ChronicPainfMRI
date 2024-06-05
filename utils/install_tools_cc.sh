@@ -65,18 +65,24 @@ fi
 ## TEMPLATEFLOW
 
 # create a virtual environment to install the templateflow package
-module load python
-ENVDIR="$HOME/ENV/templateflow"
-if [ ! -f $ENVDIR ]; then
-    virtualenv --no-download $ENVDIR
-    source $ENVDIR/bin/activate
-    pip install --no-index --upgrade pip
-    export TEMPLATEFLOW_HOME="$tools_path/templateflow"
-    pip install -v -r requirements.txt 
-else 
-    source $ENVDIR/bin/activate
+cd $(dirname $(dirname "$0"))
+requirements_file=$(find . -name requirements.txt) 
+
+# Check if the file was found
+if [[ -z "$requirements_file" ]]; then
+    echo "requirements.txt not found."
+    exit 1
+else
+    echo " the requirements file is at : $requirements_file"
 fi
 
-# Downloads the templates used in fmriprep
+module load python
+ENVDIR="$HOME/ENV/templateflow"
+virtualenv --no-download $ENVDIR
+source $ENVDIR/bin/activate
+pip install --no-index --upgrade pip
 export TEMPLATEFLOW_HOME="$tools_path/templateflow"
+pip install -v -r $requirements_file 
+
+# Downloads the templates used in fmriprep
 python $utils_path/load_templates.py 

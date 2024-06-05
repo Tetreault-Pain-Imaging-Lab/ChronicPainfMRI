@@ -56,17 +56,18 @@ run_fmriprep() {
            --time=3:00:00 <<EOF
 #!/bin/bash
 module load apptainer
-apptainer run --cleanenv \
-    -B $TEMPLATEFLOW_PATH:/templateflow
-    $FMRIPREP_IMG $INPUT_DIR $OUTPUT_DIR participant \
+apptainer run --cleanenv -B $TEMPLATEFLOW_PATH:/templateflow \
+    "$FMRIPREP_IMG" "$INPUT_DIR" "$OUTPUT_DIR" participant \
     --participant-label $subject \
     -w "${OUTPUT_DIR}/work" \
     --output-spaces T1w MNI152NLin2009cSym \
     --cifti-output 91k \
-    --bids-filter-file $bids_filter \
-    --fs-subjects-dir $FS_DIR
+    --bids-filter-file "$bids_filter" \
+    --fs-subjects-dir "$FS_DIR" \
+    --notrack 
 EOF
 }
+
 
 ## Main function
 main() {
