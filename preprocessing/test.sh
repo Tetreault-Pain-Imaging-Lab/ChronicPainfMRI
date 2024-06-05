@@ -45,7 +45,9 @@ run_fmriprep() {
     local participants=$2
     local bids_filter="${BIDS_FILTERS}/fmriprep_bids_filter_${visit}.json"
     local num_subjects=$(echo "$participants" | wc -w)
-    printf "Running fmriprep for visit %s and subject %s\n" "$visit" "$subject"
+    local array_range="1-${num_subjects}"
+
+    printf "Running fmriprep for visit %s and subjects %s\n" "$visit" "$participants"
 
     # Submit the fmriprep job to the scheduler with specified resources
     sbatch --job-name=fmriprep_${visit} \
@@ -53,9 +55,10 @@ run_fmriprep() {
            --nodes=1 \
            --cpus-per-task=16 \
            --mem=10G \
-           --time=3:00:00 
-           --array <<EOF
+           --time=3:00:00 \
+           --array=$array_range <<EOF
 #!/bin/bash
+$subject=
 module load apptainer
 apptainer run --cleanenv \
     $FMRIPREP_IMG $INPUT_DIR $OUTPUT_DIR participant \
