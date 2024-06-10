@@ -28,7 +28,7 @@
 ## Variables to set manually
 my_fmriprep_img='/home/ludoal/projects/def-pascalt-ab/ludoal/dev_tpil/tools/containers/fmriprep_23.2.3.sif' # or .img
 my_input='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/data_raw_for_test'
-my_output='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/2024-06-05_fmriprep/results'
+my_output='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/2024-06-10_fmriprep/results'
 my_templateflow_path='/home/ludoal/projects/def-pascalt-ab/ludoal/dev_tpil/tools/templateflow'
 fs_dir='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/freesurfer_v1'
 bids_filter='/home/ludoal/scratch/ChronicPainfMRI/bids_filters/fmriprep_bids_filter_v1.json'
@@ -36,7 +36,7 @@ repos_path='/home/ludoal/scratch/ChronicPainfMRI'
 # get your license by registering here : https://surfer.nmr.mgh.harvard.edu/registration.html
 
 # Automatic variables
-my_work="${my_output}/work"
+# my_work="${my_output}/work"
 my_licence_fs="$repos_path/license.txt"
 
 
@@ -58,8 +58,8 @@ echo -e "Valid subjects for v1 are :\n$my_participants\n"
 apptainer run --cleanenv \
     $my_fmriprep_img $my_input $my_output participant \
     --participant-label $my_participants \
-    -w $my_work \
     --output-spaces T1w MNI152NLin2009cSym \
     --cifti-output 91k \
     --bids-filter-file $bids_filter \
     --fs-subjects-dir $fs_dir
+#    -w $my_work \

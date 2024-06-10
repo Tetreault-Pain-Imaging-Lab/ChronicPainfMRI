@@ -44,7 +44,9 @@ run_fmriprep() {
     local visit=$1
     local subject=$2
     local bids_filter="${BIDS_FILTERS}/fmriprep_bids_filter_${visit}.json"
-    
+    export APPTAINERENV_TEMPLATEFLOW_HOME='/templateflow'
+    export APPTAINERENV_FS_LICENSE=$LICENSE_FS
+
     printf "Running fmriprep for visit %s and subject %s\n" "$visit" "$subject"
 
     # Submit the fmriprep job to the scheduler with specified resources
@@ -57,7 +59,6 @@ run_fmriprep() {
 #!/bin/bash
 module load apptainer
 apptainer run --cleanenv -B $TEMPLATEFLOW_PATH:/templateflow \
-    --home $HOME \
     "$FMRIPREP_IMG" "$INPUT_DIR" "$OUTPUT_DIR" participant \
     --participant-label $subject \
     -w "${OUTPUT_DIR}/work" \
@@ -87,7 +88,7 @@ main() {
         # Loop through each participant and run fmriprep
         for subject in $participants; do
             run_fmriprep "$visit" "$subject" || printf "Failed to submit job for visit %s and subject %s\n" "$visit" "$subject" >&2
-            sleep 1  # Add a 1-second wait time between job submissions
+            sleep 1m  # Add a 1-min wait time between job submissions
 
         done
         sleep 1
