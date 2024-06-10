@@ -57,6 +57,7 @@ run_fmriprep() {
 #!/bin/bash
 module load apptainer
 apptainer run --cleanenv -B $TEMPLATEFLOW_PATH:/templateflow \
+    --home $HOME \
     "$FMRIPREP_IMG" "$INPUT_DIR" "$OUTPUT_DIR" participant \
     --participant-label $subject \
     -w "${OUTPUT_DIR}/work" \
