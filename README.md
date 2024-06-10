@@ -11,6 +11,7 @@ In order to use `run_fmriprep_cc.sh`, you need :
 1- Freesurfer results ...
 2- A freesurfer license.txt file
 3- TemplateFlow installed with MNI152NLin2009cSym and fslr downloaded ...
+4- bids filter files (see bids_filter folder)
 
 
 ### Templateflow
