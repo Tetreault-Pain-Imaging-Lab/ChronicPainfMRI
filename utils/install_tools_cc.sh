@@ -12,6 +12,13 @@ display_help() {
     echo "  --help    Display the help message"
 }
 
+# Check if the script is run without arguments
+if [ $# -eq 0 ]; then
+    echo "Error: Not enough arguments."
+    display_help
+    exit 1
+fi
+
 fmriprep_img="fmriprep_23.2.3.sif"
 tools_path="$1"
 utils_path="$(dirname "$(realpath "$0")")"
