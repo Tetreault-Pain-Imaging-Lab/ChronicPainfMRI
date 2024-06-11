@@ -30,10 +30,10 @@ my_fmriprep_img='/home/ludoal/projects/def-pascalt-ab/ludoal/dev_tpil/tools/cont
 my_input='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/data_raw_for_test'
 my_output='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/2024-06-10_fmriprep/results'
 my_templateflow_path='/home/ludoal/projects/def-pascalt-ab/ludoal/dev_tpil/tools/templateflow'
-fs_dir='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/freesurfer_v1'
+fs_dir='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/2024-06-11_freesurfer'  # Path to freesurfer output folder containing one subfolder for each visit
 bids_filter_path='/home/ludoal/scratch/ChronicPainfMRI/bids_filters'
 repos_path='/home/ludoal/scratch/ChronicPainfMRI'
-visits=("v2" "v3")
+visits=("v1" "v2" "v3")
 
 # Automatic variables
 my_licence_fs="$repos_path/license.txt" # get your license by registering here : https://surfer.nmr.mgh.harvard.edu/registration.html

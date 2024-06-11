@@ -39,26 +39,26 @@ export APPTAINERENV_FS_LICENSE=$LICENSE_FS
 ## Function to run fmriprep for a given subject and visit
 # Arguments:
 #   $1 - Visit identifier (e.g., v1, v2, v3)
-#   $2 - Subject identifier
+#   $2 - Space separated list of subject identifiers
 run_fmriprep() {
     local visit=$1
-    local subject=$2
+    local subjects=$2
     local bids_filter="${BIDS_FILTERS}/fmriprep_bids_filter_${visit}.json"
 
-    printf "Running fmriprep for visit %s and subject %s\n" "$visit" "$subject"
+    printf "Running fmriprep for visit %s \n And subject %s\n" "$visit" "$subjects"
 
-    # Submit the fmriprep job to the scheduler with specified resources
-    sbatch --job-name=fmriprep_${visit}_${subject} \
+    # Submit the fmriprep job to the scheduler with specified resources (add ressources for bigger datasets)
+    sbatch --job-name=fmriprep_${visit} \
            --output="/home/ludoal/scratch/ChronicPainfMRI/outputs/fmriprep_parallel/slurm-%A_%x.out" \
            --nodes=1 \
-           --cpus-per-task=16 \
-           --mem=10G \
-           --time=3:00:00 <<EOF
+           --cpus-per-task=32 \
+           --mem=0 \
+           --time=12:00:00 <<EOF
 #!/bin/bash 
 module load apptainer
 apptainer run --cleanenv -B $TEMPLATEFLOW_PATH:/templateflow \
     "$FMRIPREP_IMG" "$INPUT_DIR" "$OUTPUT_DIR" participant \
-    --participant-label $subject \
+    --participant-label $subjects \
     --output-spaces T1w MNI152NLin2009cSym \
     --cifti-output 91k \
     --bids-filter-file "$bids_filter" \
@@ -70,8 +70,8 @@ EOF
 ## Main function
 main() {
     # List of visits to process
-    local visits=( "v1" )   #for testing
-    # local visits=("v1" "v2" "v3")
+    # local visits=( "v1" )   #for testing
+    local visits=("v1" "v2" "v3")
     
     # Loop through each visit
     for visit in "${visits[@]}"; do
@@ -82,13 +82,9 @@ main() {
             continue
         fi
         
-        # Loop through each participant and run fmriprep
-        for subject in $participants; do
-            run_fmriprep "$visit" "$subject" || printf "Failed to submit job for visit %s and subject %s\n" "$visit" "$subject" >&2
-            sleep 1m  # Add a 1-min wait time between job submissions
-
-        done
-        sleep 1
+        run_fmriprep "$visit" "$participants" || printf "Failed to submit job for visit %s and subject %s\n" "$visit" "$participants" >&2
+        sleep 1m  # Add a 1-min wait time between job submissions
+        
     done
 }
 
