@@ -6,7 +6,7 @@
 
 
 #SBATCH --job-name=fmriprep
-#SBATCH --time=30:00:00
+#SBATCH --time=20:00:00
 #SBATCH --nodes=1              # --> Generally depends on your nb of subjects.
                                # See the comment for the cpus-per-task. One general rule could be
                                # that if you have more subjects than cores/cpus (ex, if you process 38
@@ -68,7 +68,7 @@ for visit in "${visits[@]}"; do
         --output-spaces T1w MNI152NLin2009cSym \
         --cifti-output 91k \
         --bids-filter-file $my_bids_filter \
-        --fs-subjects-dir $fs_dir
+        --fs-subjects-dir "${fs_dir}/ses-${visit}"
     #    -w $my_work \
 
 done

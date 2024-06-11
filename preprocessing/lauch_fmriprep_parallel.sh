@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# DOESN'T WORK
+
 # launch_fmriprep_parallel.sh
 # This script launches fmriprep on multiple subjects and visits in parallel using sbatch.
 # This is a custom script to lauch fmriprep on a specific dataset onn compute canada. 
@@ -84,7 +86,7 @@ main() {
         
         run_fmriprep "$visit" "$participants" || printf "Failed to submit job for visit %s and subject %s\n" "$visit" "$participants" >&2
         sleep 1m  # Add a 1-min wait time between job submissions
-        
+
     done
 }
 
