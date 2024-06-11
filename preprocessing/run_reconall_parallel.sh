@@ -3,8 +3,8 @@
 #SBATCH --job-name=reconall_parallel
 #SBATCH --time=00:30:00
 #SBATCH --nodes=1
-#SBATCH --cpus-per-task=2
-#SBATCH --mem=10G
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=10K
 #SBATCH --mail-user=ludo.a.levesque@gmail.com
 #SBATCH --mail-type=BEGIN,END,FAIL,REQUEUE,ALL
 #SBATCH --output="/home/ludoal/scratch/ChronicPainfMRI/outputs/recon-all/slurm-%A.out"
@@ -39,7 +39,8 @@ for subj in $BIDS_DIR/sub-*; do
                 --sess_id $sess_id \
                 --t1_file $t1_file
             
-            sleep 1m
+            # sleep 1m
+            exit 1
         else
             echo "T1 file not found for $subj_id $sess_id"
         fi
