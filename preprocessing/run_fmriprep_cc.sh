@@ -13,8 +13,8 @@
                                # subjects on 32 cpus-per-task), you could ask for one more node.
 #SBATCH --cpus-per-task=32     # --> You can see here the choices. For beluga, you can choose 32, 40 or 64.
                                # https://docs.computecanada.ca/wiki/B%C3%A9luga/en#Node_Characteristics
-#SBATCH --mem=0                # --> 0 means you take all the memory of the node. If you think you will need
-                               # all the node, you can keep 0.
+#SBATCH --mem=70               # --> 0 means you take all the memory of the node. If you think you will need
+                               # all the node, you can put 0.
 
 
 #SBATCH --mail-user=ludo.a.levesque@gmail.com
@@ -33,8 +33,8 @@ my_templateflow_path='/home/ludoal/projects/def-pascalt-ab/ludoal/dev_tpil/tools
 fs_dir='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/2024-06-11_freesurfer'  # Path to freesurfer output folder containing one subfolder for each visit
 bids_filter_path='/home/ludoal/scratch/ChronicPainfMRI/bids_filters'
 repos_path='/home/ludoal/scratch/ChronicPainfMRI'
-# visits=("v1" "v2" "v3")
-visits=("v1")    # FOR TESTS, REMOVE THIS LINE TO RUN THE FULL DATASET
+visits=("v1" "v2" "v3")
+
 
 # Automatic variables
 my_licence_fs="$repos_path/license.txt" # get your license by registering here : https://surfer.nmr.mgh.harvard.edu/registration.html
@@ -51,7 +51,7 @@ export APPTAINERENV_FS_LICENSE=$my_licence_fs
 # Loop through each visit
 for visit in "${visits[@]}"; do
     # Fetch participants for the specified visit
-    local participants
+    participants=""
     if ! participants=$(bash "$repos_path/utils/get_subs_for_visit.sh" "$my_input" "$visit"); then
         printf "Error fetching participants for visit %s\n" "$visit" >&2
         continue
