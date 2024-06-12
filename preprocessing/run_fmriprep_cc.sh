@@ -33,7 +33,8 @@ my_templateflow_path='/home/ludoal/projects/def-pascalt-ab/ludoal/dev_tpil/tools
 fs_dir='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/2024-06-11_freesurfer'  # Path to freesurfer output folder containing one subfolder for each visit
 bids_filter_path='/home/ludoal/scratch/ChronicPainfMRI/bids_filters'
 repos_path='/home/ludoal/scratch/ChronicPainfMRI'
-visits=("v1" "v2" "v3")
+# visits=("v1" "v2" "v3")
+visits=("v1")    # FOR TESTS, REMOVE THIS LINE TO RUN THE FULL DATASET
 
 # Automatic variables
 my_licence_fs="$repos_path/license.txt" # get your license by registering here : https://surfer.nmr.mgh.harvard.edu/registration.html
@@ -57,6 +58,7 @@ for visit in "${visits[@]}"; do
     fi
     
     echo -e "Valid subjects for $visit are :\n$participants\n"  
+
 
     # Fetch the right bids_filter file 
     my_bids_filter="${repos_path}/bids_filters/fmriprep_bids_filter_${visit}.json"
