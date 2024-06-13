@@ -5,8 +5,10 @@
 #   - with-singularity: container image fMRIprep 23.2.0
 
 
-#SBATCH --job-name=fmriprep
-#SBATCH --time=20:00:00
+# To monitor ressources usage on Narval and adjust ressource alloacation : https://portail.narval.calculquebec.ca/
+
+#SBATCH --job-name=fmriprep_loop
+#SBATCH --time=5:00:00        # --> Generally depends on your nb of subjects.
 #SBATCH --nodes=1              # --> Generally depends on your nb of subjects.
                                # See the comment for the cpus-per-task. One general rule could be
                                # that if you have more subjects than cores/cpus (ex, if you process 38
@@ -28,9 +30,9 @@
 ## Variables to set manually
 my_fmriprep_img='/home/ludoal/projects/def-pascalt-ab/ludoal/dev_tpil/tools/containers/fmriprep_23.2.3.sif' # or .img
 my_input='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/data_raw_for_test'
-my_output='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/2024-06-10_fmriprep/results'
+my_output='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/2024-06-13_fmriprep/results'
 my_templateflow_path='/home/ludoal/projects/def-pascalt-ab/ludoal/dev_tpil/tools/templateflow'
-fs_dir='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/2024-06-11_freesurfer'  # Path to freesurfer output folder containing one subfolder for each visit
+fs_dir='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/2024-06-12_freesurfer'  # Path to freesurfer output folder containing one subfolder for each visit
 bids_filter_path='/home/ludoal/scratch/ChronicPainfMRI/bids_filters'
 repos_path='/home/ludoal/scratch/ChronicPainfMRI'
 visits=("v1" "v2" "v3")
@@ -52,7 +54,7 @@ export APPTAINERENV_FS_LICENSE=$my_licence_fs
 for visit in "${visits[@]}"; do
     # Fetch participants for the specified visit
     participants=""
-    if ! participants=$(bash "$repos_path/utils/get_subs_for_visit.sh" "$my_input" "$visit"); then
+    if ! participants=$(bash "$repos_path/utils/get_subs_for_visit.sh" "$my_input" "$visit"); then # get_subs_for_visit returns a space seperated list of subject numbers)
         printf "Error fetching participants for visit %s\n" "$visit" >&2
         continue
     fi

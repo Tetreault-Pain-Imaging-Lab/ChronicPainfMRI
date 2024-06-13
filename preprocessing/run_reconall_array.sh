@@ -45,11 +45,11 @@ echo "Output subject directory: $output_subj_dir"
 
 
 
-# Check if output already exists to avoid reprocessing
-# if [ -d "$output_subj_dir" ]; then
-#     echo "Output already exists for ${subj_id}, skipping."
-#     exit 0
-# fi
+Check if output already exists to avoid reprocessing
+if [ -d "$output_subj_dir" ]; then
+    echo "Output already exists for ${subj_id}, skipping."
+    exit 0
+fi
 
 # Load module and run recon-all using Singularity
 module load apptainer
