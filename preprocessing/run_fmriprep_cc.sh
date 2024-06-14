@@ -8,7 +8,7 @@
 # To monitor ressources usage on Narval and adjust ressource alloacation : https://portail.narval.calculquebec.ca/
 
 #SBATCH --job-name=fmriprep_loop
-#SBATCH --time=5:00:00        # --> Generally depends on your nb of subjects.
+#SBATCH --time=10:00:00        # --> Generally depends on your nb of subjects.
 #SBATCH --nodes=1              # --> Generally depends on your nb of subjects.
                                # See the comment for the cpus-per-task. One general rule could be
                                # that if you have more subjects than cores/cpus (ex, if you process 38
