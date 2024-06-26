@@ -2,12 +2,15 @@
 
 
     ## Directories and paths
-# Replace with your BIDS dataset directory
+# your BIDS dataset directory
 export BIDS_DIR="/home/ludoal/scratch/tpil_data/BIDS_longitudinal/data_raw_for_test"  
-# Replace with your desired FreeSurfer output directory (to run fmriprep one session at a time, the freesurfer output folder needs to have one subfolderper session)
+# Your desired FreeSurfer output directory (to run fmriprep one session at a time, the freesurfer output folder needs to have one subfolderper session)
 export OUTPUT_DIR="/home/ludoal/scratch/tpil_data/BIDS_longitudinal/2024-06-12_freesurfer" 
-export SINGULARITY_IMG="/home/ludoal/projects/def-pascalt-ab/ludoal/dev_tpil/tools/containers/freesurfer_7.2.0.sif" # Replace with the path to your FreeSurfer Singularity image
-export LICENSE_FILE="/home/ludoal/scratch/ChronicPainfMRI/license.txt"   # Replace with the path to your FreeSurfer license file
+# Path to your FreeSurfer image
+export SINGULARITY_IMG="/home/ludoal/projects/def-pascalt-ab/ludoal/dev_tpil/tools/containers/freesurfer_7.2.0.sif" 
+# Path to your FreeSurfer license file
+export LICENSE_FILE="/home/ludoal/scratch/ChronicPainfMRI/license.txt"
+# Path to the repository containing this script   
 export REPOS_PATH='/home/ludoal/scratch/ChronicPainfMRI'
 
 # Calculate total number of subject/session combinations
