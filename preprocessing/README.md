@@ -41,7 +41,7 @@ And here is the desired structure of freesurfer outputs:
 ```
 
 ## Freesurfer recon-all
-It is possible to run recon-all using cbrain, or you can use the scripts `submit_reconall_array.sh` that runs recon-all on every subject-sesion pair in parallel on a compute canada cluster. If using cbrain, make sure you respect the mentionned output structure. 
+It is possible to run recon-all using cbrain, or you can use the scripts `submit_reconall_array.sh` that runs recon-all on every subject-sesion pair in parallel on a compute canada cluster. If using cbrain, make sure you respect the mentionned output structure. To use recon-all on compute canada, we used a combination of 2 scripts; `run_reconall_array.sh` runs reconall on one subject-session pair and `submit_reconall_array.sh` submits an array job that runs `run_reconall_array.sh` for every subject-session pair so that thewhole dataset can be processed in parallel. You might need to personalize both scripts to run with new data. Most of the changes will be in the first lines of `submit_reconall_array.sh` where paths are set. 
 
 <details><summary><b>Resources</b></summary>
 
@@ -52,8 +52,7 @@ It is possible to run recon-all using cbrain, or you can use the scripts `submit
 
 <details><summary><b>Example command</b></summary>
 ```
-  ...
-  
+bash /home/ludoal/scratch/ChronicPainfMRI/preprocessing/submit_reconall_array.sh 
 ```
 </details>
 
