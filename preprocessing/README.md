@@ -51,29 +51,27 @@ It is possible to run recon-all using cbrain, or you can use the scripts `submit
 </details>
 
 <details><summary><b>Example command</b></summary>
-```
+  
+```bash
 bash /home/ludoal/scratch/ChronicPainfMRI/preprocessing/submit_reconall_array.sh 
 ```
 </details>
 
 
-<details><summary><b>Outputs</b></summary>
-
-</details>
 
 ## Fmriprep
 
-
+To run fmriprep one sessions at a time for a longitudinal study we used the script `run_fmriprep_cc.sh`
 <details><summary><b>Resources</b></summary>
 
 </details>
 
 <details><summary><b>Example command</b></summary>
-  
+
+```bash 
+sbatch /home/ludoal/scratch/ChronicPainfMRI/preprocessing/run_fmriprep_cc.sh
+```
+
 </details>
 
-
-<details><summary><b>Outputs</b></summary>
-
-</details>
 
