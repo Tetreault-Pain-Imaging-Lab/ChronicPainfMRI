@@ -73,7 +73,7 @@ fi
 
 # create a virtual environment to install the templateflow package
 cd $(dirname $(dirname "$0"))
-requirements_file=$(find . -name requirements.txt) 
+requirements_file=$(find . -name templateflow_requirements.txt) 
 
 # Check if the file was found
 if [[ -z "$requirements_file" ]]; then
