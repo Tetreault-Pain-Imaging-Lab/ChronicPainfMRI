@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# This script installs the needed tools for this fMRI analysis in a folder given as argument
+# This script installs the needed tools for this fMRI analysis in a folder given as argument and creates virtual environments to run certain scripts
 
-# Example usage: bash /home/ludoal/scratch/ChronicPainfMRI/utils/install_tools_cc.sh /home/ludoal/projects/def-pascalt-ab/ludoal/dev_tpil/tools
+# Example usage: bash /home/ludoal/scratch/ChronicPainfMRI/utils/install_tools_cc.sh /home/ludoal/projects/def-pascalt-ab/ludoal/dev_tpil/tools /home/ludoal/scratch/ENV
 
 # Function to display script usage information
 display_help() {
     echo "This script installs the needed tools for this fMRI analysis in a folder given as argument"
-    echo "Usage: $(basename "$0") [tools_folder] [options]"
+    echo "Usage: $(basename "$0") [tools_folder] [env_path] [options]"
     echo "Options:"
     echo "  --help    Display the help message"
 }
@@ -22,6 +22,7 @@ fi
 fmriprep_img="fmriprep_23.2.3.sif"
 tools_path="$1"
 utils_path="$(dirname "$(realpath "$0")")"
+env_path="$2"
 
 ## FMRIPREP
 
@@ -84,7 +85,7 @@ else
 fi
 
 module load python
-ENVDIR="$HOME/ENV/templateflow"
+ENVDIR="$env_path/templateflow"
 virtualenv --no-download $ENVDIR
 source $ENVDIR/bin/activate
 pip install --no-index --upgrade pip
@@ -93,3 +94,23 @@ pip install -v -r $requirements_file
 
 # Downloads the templates used in fmriprep
 python $utils_path/load_templates.py 
+
+
+## Virtual environment for python scripts
+
+requirements_file=$(find . -name fmri_requirements.txt) 
+
+# Check if the file was found
+if [[ -z "$requirements_file" ]]; then
+    echo "requirements.txt not found."
+    exit 1
+else
+    echo " the requirements file for fMRI python scripts is at : $requirements_file"
+fi
+
+module load python
+ENVDIR="$env_path/fMRI"
+virtualenv --no-download $ENVDIR
+source $ENVDIR/bin/activate
+pip install --no-index --upgrade pip
+pip install -v -r $requirements_file 
