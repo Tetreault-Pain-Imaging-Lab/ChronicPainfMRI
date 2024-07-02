@@ -12,21 +12,7 @@ repos_path='/home/ludoal/scratch/ChronicPainfMRI'
 subjects=$(find $FMRIPREP_DIR -mindepth 1 -maxdepth 1 -type d -name "sub-*")
 
 # Create a list of all subject-session pairs
-subject_sessions=()
-for sub_dir in $subjects; do
-  subject=$(basename $sub_dir)
-#   echo "Found subject: $subject"
-  sessions=$(find $sub_dir -mindepth 1 -maxdepth 1 -type d -name "ses-*")
-  for ses_dir in $sessions; do
-    session=$(basename $ses_dir)
-    # echo "Found session: $session for subject: $subject"
-    subject_sessions+=("${subject}_${session}")
-  done
-done
-
-# Save the pairs to a file
-pairs_file="$repos_path/sub_ses_pairs.txt"
-printf "%s\n" "${subject_sessions[@]}" > $pairs_file
+bash $repos_path/utils/create_sub_ses_pairs_list.sh $FMRIPREP_DIR $repos_path
 
 # Count number of pairs
 num_pairs=${#subject_sessions[@]}
