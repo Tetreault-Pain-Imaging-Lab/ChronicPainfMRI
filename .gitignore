@@ -2,3 +2,5 @@ outputs/
 test/
 work/
 recon-all_help.txt
+nilearn*
+sub_ses_pairs.txt

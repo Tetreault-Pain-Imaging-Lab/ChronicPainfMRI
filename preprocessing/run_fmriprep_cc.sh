@@ -8,7 +8,7 @@
 # To monitor ressources usage on Narval and adjust ressource alloacation : https://portail.narval.calculquebec.ca/
 
 #SBATCH --job-name=fmriprep_loop
-#SBATCH --time=10:00:00        # --> Generally depends on your nb of subjects.
+#SBATCH --time=20:00:00        # --> Generally depends on your nb of subjects.
 #SBATCH --nodes=1              # --> Generally depends on your nb of subjects.
                                # See the comment for the cpus-per-task. One general rule could be
                                # that if you have more subjects than cores/cpus (ex, if you process 38
@@ -30,7 +30,7 @@
 ## Variables to set manually
 my_fmriprep_img='/home/ludoal/projects/def-pascalt-ab/ludoal/dev_tpil/tools/containers/fmriprep_23.2.3.sif' # or .img
 my_input='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/data_raw_for_test'
-my_output='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/2024-06-13_fmriprep/results'
+my_output='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/2024-06-28_fmriprep/results'
 my_templateflow_path='/home/ludoal/projects/def-pascalt-ab/ludoal/dev_tpil/tools/templateflow'
 fs_dir='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/2024-06-12_freesurfer'  # Path to freesurfer output folder containing one subfolder for each visit
 bids_filter_path='/home/ludoal/scratch/ChronicPainfMRI/bids_filters'

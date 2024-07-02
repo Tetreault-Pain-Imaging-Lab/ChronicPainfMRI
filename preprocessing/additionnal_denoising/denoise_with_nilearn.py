@@ -12,16 +12,16 @@ This script processes BOLD data using a specified denoising strategy
 and brain mask. It uses the Nilearn library for masking and denoising operations.
 
 Usage:
-    python bold_data_cleaning.py <bold_file> <denoise_strategy> <brain_mask_file>
+    python denoise_with_nilearn.py --input <bold_file> --strategy <denoise_strategy> --mask <brain_mask_file> --output <output_file>
 
 Arguments:
-    bold_files (str): Path to the BOLD file to be cleaned. can be a list of files
-    denoise_strategy (str): Denoising strategy to be used (e.g., 'simple', 'comp_cor').
-    brain_mask_files (str): Path to the brain mask file in Nifti format. If bold_files is a list, this needs to be a list too
-    output_files (str): Complete path for the denoised file
+    input (str): Path to the BOLD file to be cleaned.
+    strategy (str): Denoising strategy to be used (e.g., 'simple', 'comp_cor').
+    mask (str): Path to the brain mask file in Nifti format.
+    output (str): Complete path for the denoised file.
 
 Example:
-    python bold_data_cleaning.py sub-02_task-rest_space-MNI152NLin6Asym_desc-preproc_bold.nii.gz simple sub-02_task-rest_space-MNI152NLin6Asym_desc-brain_mask.nii.gz
+    python denoise_with_nilearn.py --input sub-02_task-rest_space-MNI152NLin6Asym_desc-preproc_bold.nii.gz --strategy simple --mask sub-02_task-rest_space-MNI152NLin6Asym_desc-brain_mask.nii.gz --output sub-02_task-rest_denoised_bold.nii.gz
 """
 
 import os
@@ -29,25 +29,31 @@ import argparse
 import nibabel as nib
 from nilearn.maskers import NiftiMasker
 from nilearn.interfaces.fmriprep import load_confounds_strategy
+import logging
 
+def setup_logging():
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-def clean_bold_with_confounds(bold_file_paths, denoise_strat, brain_mask_files, output_file):
-    # Load the confounds based on the chosen denoising strategy
-    confounds, _ = load_confounds_strategy(img_files=bold_file_paths, denoise_strategy=denoise_strat)
+def validate_file(file_path, file_type):
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"{file_type} file not found: {file_path}")
 
-    if type(bold_file_paths) != list:
-        bold_file_paths = [bold_file_paths]
-        confounds = [confounds]
-        brain_mask_files = [brain_mask_files]
+def clean_bold_with_confounds(bold_file_path, denoise_strat, brain_mask_file, output_file):
+    try:
+        # Validate input files
+        validate_file(bold_file_path, "BOLD")
+        validate_file(brain_mask_file, "Brain mask")
 
-    for index, bold_file in enumerate(bold_file_paths):
-        bold_img = nib.load(bold_file)
+        # Load the confounds based on the chosen denoising strategy
+        confounds, _ = load_confounds_strategy(img_files=[bold_file_path], denoise_strategy=denoise_strat)
+
+        bold_img = nib.load(bold_file_path)
         # Extract TR from the header of the BOLD file
         TR = bold_img.header['pixdim'][4]
 
         # Create a NiftiMasker object for time series extraction
         brain_masker = NiftiMasker(
-            mask_img=brain_mask_files[index],
+            mask_img=brain_mask_file,
             detrend=True,
             standardize="zscore_sample",
             low_pass=0.4,
@@ -59,32 +65,37 @@ def clean_bold_with_confounds(bold_file_paths, denoise_strat, brain_mask_files, 
             verbose=0)
 
         # Extract and denoise time series
-        time_series = brain_masker.fit_transform(bold_img, confounds=confounds[index])
+        time_series = brain_masker.fit_transform(bold_img, confounds=confounds)
 
         # Save the denoised nifti
         nii_img = brain_masker.inverse_transform(time_series)
         nii_affine = bold_img.affine
         nii_header = bold_img.header
         nii_img = nib.Nifti1Image(nii_img.get_fdata(), affine=nii_affine, header=nii_header)
-        # print(nii_img.header['pixdim'])
         nib.save(nii_img, output_file)
+        logging.info(f"Denoised file saved: {output_file}")
 
+    except Exception as e:
+        logging.error(f"An error occurred: {e}")
 
 def main():
+    # Setup logging
+    setup_logging()
     
     # Create an argument parser instance
     parser = argparse.ArgumentParser(description="Clean BOLD data with confounds")
 
     # Define command-line arguments and their types
-    parser.add_argument("bold_files", type=str, help="Path to the BOLD files to clean")
-    parser.add_argument("denoise_strategy", type=str, help="Denoising strategy to use")
-    parser.add_argument("brain_mask_files", type=str, help="Path to the brain mask file")
-    parser.add_argument("output_files", type=str, help="Complete path with filename of the denoised file")
+    parser.add_argument('--input', type=str, required=True, help='Path to the input BOLD file.')
+    parser.add_argument('--mask', type=str, required=True, help='Path to the brain mask file.')
+    parser.add_argument('--output', type=str, required=True, help='Complete path with filename of the denoised file.')
+    parser.add_argument('--strategy', type=str, default='simple', help='Denoising strategy to use.')
+    
     # Parse the provided command-line arguments
     args = parser.parse_args()
 
     # Call the cleaning function with parsed arguments
-    clean_bold_with_confounds(args.bold_files, args.denoise_strategy, args.brain_mask_files, args.output_files)
+    clean_bold_with_confounds(args.input, args.strategy, args.mask, args.output)
 
 
 if __name__ == "__main__":
