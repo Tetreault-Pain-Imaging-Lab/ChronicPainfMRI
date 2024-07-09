@@ -20,11 +20,11 @@
 #   --mail-type: Conditions under which to send job status emails (BEGIN, END, FAIL, REQUEUE, ALL).
 #   --output: Path to the output log file for the SLURM job. %A is the job ID.
 
-#SBATCH --job-name=fmriprep
-#SBATCH --time=20:00:00
+#SBATCH --job-name=fmriprep_all
+#SBATCH --time=50:00:00
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=32
-#SBATCH --mem=100G
+#SBATCH --mem=70G
 #SBATCH --output="/home/ludoal/scratch/ChronicPainfMRI/outputs/fmriprep_parallel/slurm-%x-%A_%a.out"
 
 
@@ -39,10 +39,10 @@
 
 ## Variables to set manually
 my_fmriprep_img='/home/ludoal/projects/def-pascalt-ab/ludoal/dev_tpil/tools/containers/fmriprep_23.2.3.sif' # or .img
-my_input='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/data_raw_for_test'
-my_output='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/2024-07-02_fmriprep/results'
+my_input='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/complete_dataset_raw'
+my_output='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/2024-07-05_fmriprep_all/'
 my_templateflow_path='/home/ludoal/projects/def-pascalt-ab/ludoal/dev_tpil/tools/templateflow'
-fs_dir='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/2024-06-12_freesurfer'  # Path to freesurfer output folder containing one subfolder for each visit
+fs_dir='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/2024-07-09_freesurfer'  # Path to freesurfer output folder containing one subfolder for each visit
 bids_filter_path='/home/ludoal/scratch/ChronicPainfMRI/bids_filters'
 repos_path='/home/ludoal/scratch/ChronicPainfMRI'
 visits=("v1" "v2" "v3")
