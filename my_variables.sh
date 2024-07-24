@@ -17,16 +17,27 @@ TOOLS_PATH="/home/ludoal/projects/def-pascalt-ab/ludoal/dev_tpil/tools"
 #       -participants.tsv :
 #       -participants.json : necessary for BIDS format (see BIDS documentation for what it should contain)
 #       -dataset_description.json : necessary for BIDS format
-BIDS_DIR="/home/ludoal/scratch/tpil_data/BIDS_longitudinal/complete_dataset_raw"
+BIDS_DIR="/home/ludoal/scratch/tpil_data/test_cross_sect/data"
 
 # The results will be stored in folders named after the pipeline that produced them under the OUTPUT_DIR
-OUTPUT_DIR="/home/ludoal/scratch/tpil_data/BIDS_longitudinal"
+OUTPUT_DIR="/home/ludoal/scratch/tpil_data/test_cross_sect"
 
 # The session labels of your longitudinal data
-VISITS=("v1" "v2" "v3")
-N_VISITS=${#VISITS[@]}
+# SESSIONS=("v1",  "v2", "v3")
+# N_SESSIONS=${#SESSIONS[@]} 
 
-bids_filter_path="$REPOS_DIR/bids_filters"
+SESSIONS=()
+N_SESSIONS=1
+
+
+# If your dataset is cross sectionnal, set to false
+longitudinal=false
+
+
+# bids_filter files should be created for your dataset. See the README of the bids_filters folder
+# If your dataset is longitudinal, you need a bids_filter file for each session, and you need to 
+# add the session name at the end of the bids_filter file name. ex : fmriprep_bids_filter_v1.json
+bids_filter_path="$REPOS_DIR/bids_filters" 
 
 
 ###############################         Ressource alloacation         ##########################################
@@ -53,18 +64,19 @@ MAIL="ludo.a.levesque@gmail.com"  # optionnal, remove the `#SBATCH --mail` lines
 SLURM_OUT="$REPOS_DIR/outputs" 
 
 # fmriprep ressources allocation (used in for the script /tractoflow/run_tractoflow_cc.sh)
-fmriprep_ressources="#SBATCH --job-name=fmriprep_all
-#SBATCH --time=50:00:00
+fmriprep_ressources="#SBATCH --job-name=fmriprep_cross
+#SBATCH --time=10:00:00
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=32
-#SBATCH --mem=70G
-#SBATCH --output=\"$SLURM_OUT/fmriprep/%X-%A.out\"   
+#SBATCH --mem=10G
+#SBATCH --output=\"$SLURM_OUT/fmriprep_cross/%slurm-%A-%a.out\"   
 #SBATCH --mail-user=$MAIL
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-type=REQUEUE
-#SBATCH --array=0-$((N_VISITS-1))"
+#SBATCH --array=0-$((N_SESSIONS-1))"
 
 
 # Some variables might be added here by some scripts to speed up processing:
+fs_dir='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/2024-07-09_freesurfer/v1'  # Path to freesurfer output folder containing one subfolder for each session

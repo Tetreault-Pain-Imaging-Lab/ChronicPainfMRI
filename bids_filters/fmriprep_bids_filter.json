@@ -1,0 +1,5 @@
+{
+    "fmap": {"datatype": "fmap", "acquisition": "rest", "direction": "AP", "suffix": "epi"},
+    "bold": {"datatype": "func", "task": "rest", "suffix": "bold"},
+    "t1w": {"datatype": "anat", "suffix": "T1w"}
+}

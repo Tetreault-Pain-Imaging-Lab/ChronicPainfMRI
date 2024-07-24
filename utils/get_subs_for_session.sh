@@ -7,7 +7,7 @@
 # to prevent fmriprep from crashing. 
 
 # Usage :
-#     example : bash utils/get_subs_for_visit.sh '/home/ludoal/scratch/tpil_data/BIDS_longitudinal/data_raw_for_test' v1 
+#     example : bash utils/get_subs_for_session.sh '/home/ludoal/scratch/tpil_data/BIDS_longitudinal/data_raw_for_test' v1 
 
 set -euo pipefail
 

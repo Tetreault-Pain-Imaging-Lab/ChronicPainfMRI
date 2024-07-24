@@ -17,7 +17,7 @@ fi
 
 # Source the configuration file
 source "$CONFIG_FILE"
-complet_config_path="$REPOS_DIR/$CONFIG_FILE"
+complete_config_path="$REPOS_DIR/$CONFIG_FILE"
 
 
 my_fmriprep_img="$TOOLS_PATH/containers/fmriprep_23.2.3.sif" # or .img
@@ -36,19 +36,45 @@ cat <<EOT > $TMP_SCRIPT
 #!/bin/bash
 $fmriprep_ressources
 
-source $complet_config_path
 
-session=\${SESSIONS[\$SLURM_ARRAY_TASK_ID]}
+source $complete_config_path
 
-# Fetch participants for the specified session
+
 participants=""
-if ! participants=\$(bash "$REPOS_DIR/utils/get_subs_for_session.sh" "$my_input" "\$session"); then # (get_subs_for_session returns a space seperated list of subject numbers)
-    printf "Error fetching participants for session %s\n" "\$session" >&2
-    continue
-fi
-echo -e "Valid subjects for \$session are :\n\$participants\n"
+if [ "\$longitudinal" = true ]; then
+    session=\${SESSIONS[\$SLURM_ARRAY_TASK_ID]}
+    if ! participants=\$(bash "$REPOS_DIR/utils/get_subs_for_session.sh" "$my_input" "\$session"); then
+        printf "Error fetching participants for session %s\n" "\$session" >&2
+        continue
+    fi
 
-# Make sure array jobs have different work dir per SESSIONS
+    echo -e "Valid subjects for \$session are :\n\$participants\n"
+
+    # Fetch the right bids_filter file 
+    my_bids_filter="${REPOS_DIR}/bids_filters/fmriprep_bids_filter_\${session}.json"
+
+    fs_sub_dir="${fs_dir}/ses-\${session}"
+
+
+else
+    if ! participants=\$(bash "$REPOS_DIR/utils/get_all_subs.sh" "$my_input"); then
+        printf "Error fetching participants\n" >&2
+    echo -e "Valid subjects are :\n\$participants\n"
+        continue
+    fi
+
+    echo -e "Valid subjects are :\n\$participants\n"
+
+    # Fetch the right bids_filter file 
+    my_bids_filter="${REPOS_DIR}/bids_filters/fmriprep_bids_filter.json"
+
+    fs_sub_dir=$fs_dir
+
+
+fi
+
+
+# Make sure array jobs have different work dir per SESSIONS if there are sessions
 my_work=$REPOS_DIR/fmriprep_work/\$session
 if [ ! -d \$my_work ]; then
     mkdir -p \$my_work
@@ -57,8 +83,6 @@ fi
 # To check if the license is accesible to fmriprep use this line :
 # apptainer exec --cleanenv -B /project:/project -B /scratch:/scratch $my_fmriprep_img env | grep FS_LICENSE
 
-# Fetch the right bids_filter file 
-my_bids_filter="${REPOS_DIR}/bids_filters/fmriprep_bids_filter_\${session}.json"
 
 export APPTAINERENV_TEMPLATEFLOW_HOME=$my_templateflow_path
 export APPTAINERENV_FS_LICENSE=$my_licence_fs
@@ -71,7 +95,7 @@ apptainer run --cleanenv \
     --output-spaces T1w MNI152NLin2009cSym \
     --cifti-output 91k \
     --bids-filter-file \$my_bids_filter \
-    --fs-subjects-dir "${fs_dir}/ses-\${session}" \
+    --fs-subjects-dir \$fs_sub_dir \
     -w \$my_work
 
 EOT
@@ -81,9 +105,10 @@ EOT
 
 # Submit the scipt as a slurm job
 sbatch $TMP_SCRIPT
-sleep 5s
+
 
 # Uncomment to automatically remove the temporary script 
+# sleep 5s
 # rm $TMP_SCRIPT
 
 

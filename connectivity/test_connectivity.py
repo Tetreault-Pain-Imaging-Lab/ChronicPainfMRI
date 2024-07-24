@@ -10,6 +10,7 @@ from nilearn import datasets, plotting
 from nilearn.connectome import ConnectivityMeasure
 from nilearn.maskers import NiftiMapsMasker
 from nilearn import plotting
+import matplotlib.pyplot as plt
 
 # Load a BOLD file
 bold_file = '/home/ludoal/scratch/tpil_data/BIDS_longitudinal/2024-06-28_fmriprep/results/sub-002/ses-v1/func/sub-002_ses-v1_task-rest_space-MNI152NLin2009cSym_desc-preproc_bold_denoised.nii.gz'
@@ -47,9 +48,12 @@ connectivity_matrix  = connectivity_measure.fit_transform([time_series])[0]
 
 # Mask out the major diagonal
 np.fill_diagonal(connectivity_matrix, 0)
-plotting.plot_matrix(
-    connectivity_matrix, labels=labels, colorbar=True, vmax=0.8, vmin=-0.8, output_file='connectivity_matrix_plot.png'
+matrix_plot = plotting.plot_matrix(
+    connectivity_matrix, labels=labels, colorbar=True, vmax=0.8, vmin=-0.8
 )
+# Save the plot to a file
+matrix_plot.figure.savefig('connectivity_matrix_plot.png')
+plt.close(matrix_plot.figure)  # Close the plot to free up memory
 
 print("Connectivity matrix generated.")
 
