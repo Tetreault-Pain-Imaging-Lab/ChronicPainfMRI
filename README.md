@@ -1,4 +1,3 @@
-# 
 #  <img src="assets/logo.png" alt="logo" width="50"/>   ChronicPainfMRI  
 **ChronicPainfMRI** is a repository that aims to facilitate the reproduction of the fMRI processing and analysis we did in our lab, on different datasets. It contains code to easily run the same pipelines we normally use and with the same options. One of the strong points of this repository is that it allows to easily run fmriprep on longitudinal data.
 
@@ -27,18 +26,8 @@ You could also simply clone this repository on your Compute Canada account and s
 
 To use this repository on Compute Canada, here's some helpful guidance:
 - **Data Management**: Place your data in the scratch directory, run scripts there, and transfer results elsewhere only after processing.
-    (When moving results folder be carefull of symlinks. For example, the results folder of tractoflow contains symlinks that points to files in the work folder. To copy        and paste results from one directory to another you can use the rsync command.)
-  
-    Copy and paste results (replacing symlinks with actual files):
-    ```bash
-    rsync -rL user@graham.alliancecan.ca:/home/user/scratch/data/2024-05-27_tractoflow/results /home/user/projects/tpil_data/2024-05-27_tractoflow/
-    ```
-    Preserving symlinks (the links must point to accessible files)
-    ```bash
-    rsync -rl user@graham.alliancecan.ca:/home/user/scratch/data/2024-05-27_tractoflow/results /home/user/scratch/data/2024-05-27_tractoflow/
-    ```
-
-- **Tool Installation**: Install tools like `tractoflow` and the `scilus` container in a persistent directory (e.g., *projects* directory). Use the `install_tools_cc.sh` to install them in one step.
+    
+- **Tool Installation**: Install tools like `fmriprep` and `freesurfer` in a persistent directory (e.g., *projects* directory). Use the `install_tools_cc.sh` to install them in one step.
 
 - **Ressources allocation**:When submitting jobs on a cluster, you have to allocate ressources trough the SLURMS parameters. To monitor jobs and see what ressources it uses, Narval and Beluga have a portal that helps you visualise ressources usage for tasks :[Narval](https://portail.narval.calculquebec.ca), [Beluga](https://portail.beluga.calculquebec.ca).
 Portals for the other clusters might be available now.
@@ -75,13 +64,13 @@ To run the anlysis on a new dataset, you need to create your config file. In thi
 | `TOOLS_PATH`           | Directory containing tools like the sclilus lab container and nextflow tools. Recommended to place in `/user/projects` to prevent purging.   |
 | `BIDS_DIR`             | Path to the raw BIDS formatted dataset. Contains subject folders and essential files like `participants.tsv`, `participants.json`, and `dataset_description.json`. |
 | `OUTPUT_DIR`           | Directory where results are stored, organized by the pipeline that generated them. (i.e. tractoflow outputs will be placed in `$OUTPUT_DIR/tractoflow`)                                                         |
+| `LICENSE_FILE`   | Path to your Freesurefer license file. Needed for Freesurfer and fmriprep. To get yours, register [here](https://surfer.nmr.mgh.harvard.edu/registration.html)   |
+| `longitudinal` | If your dataset is cross-sectionnal, set to false. | 
+| `SESSIONS` | The session labels of your longitudinal data in a space separeted list (i.e. `SESSIONS=("v1" "v2" "v3")`. You can comment this for cross-sectionnal data.  |
+| `N_SESSIONS` | Number of sessions in your data. You can comment this for cross-sectionnal data. You can comment this for cross-sectionnal data. |
 | `MAIL`                 | Email address for job notifications. Optional; remove `#SBATCH --mail` lines if not needed.                                                  |
 | `SLURM_OUT`            | Path for storing SLURM job output logs.                                                                                                       |
-| `tractoflow_ressources`| SLURM parameters for the `run_tractoflow_cc.sh` script, including job name, time, nodes, CPUs per task, memory, output log path, and email notifications. |
-| `rbx_ressources`       | SLURM parameters for the `run_rbx_cc.sh` script, including job name, time, nodes, CPUs per task, memory, output log path, and email notifications. |
-| `tractometry_ressources`| SLURM parameters for the `run_tractometry_cc.sh` script, including job name, time, nodes, CPUs per task, memory, output log path, and email notifications. |
-| `nb_points`            | (optional) Number of points used in `run_tractometry_cc.sh`. If this variables is empty, 20 points will be used by default                     |
-| `QC_ressources`        | SLURM parameters for the `run_dmriqc_cc.sh` script, including nodes, CPUs per task, memory, time, and output log path.                            |
+| `fmriprep_ressources`| SLURM parameters for the `run_fmriprep_cc.sh` script, including job name, time, nodes, CPUs per task, memory, output log path, and email notifications. |
 
 
 Creating multiple config file with evocative names can allow you to quickly switch between two dataset or two configurations of your data without changing anything in the other scripts. After creating this file you can run any other script of this repository this way:
