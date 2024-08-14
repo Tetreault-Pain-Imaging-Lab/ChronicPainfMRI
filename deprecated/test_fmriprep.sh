@@ -4,32 +4,39 @@
 #   - bids: clinical data from TPIL lab (27 CLBP and 25 control subjects);
 #   - with-singularity: container image fMRIprep 23.2.0
 
-
 # Define the path to the configuration file
-CONFIG_FILE="my_variables.sh"
+DEFAULT_CONFIG_FILE="config_ex.sh"
 
-# Check if the configuration file exists
-if [[ ! -f "$CONFIG_FILE" ]]; then
-  echo "Error: Configuration file not found."
-  echo "Please ensure the current directory is ChronicPainfMRI or a parent directory when running this script."
-  exit 1
+# Check if an argument is provided
+if [ "$#" -eq 1 ]; then
+    CONFIG_FILE="$1"
+else
+    CONFIG_FILE="$DEFAULT_CONFIG_FILE"
 fi
 
-# Source the configuration file
-source "$CONFIG_FILE"
+# Check if the config file exists
+if [ -f "$CONFIG_FILE" ]; then
+    # Source the config file
+    source "$CONFIG_FILE"
+    echo "Using config file: $CONFIG_FILE"
+else
+    echo "Error: Config file '$CONFIG_FILE' not found."
+    exit 1
+fi
+
 complete_config_path="$REPOS_DIR/$CONFIG_FILE"
 
 
 my_fmriprep_img="$TOOLS_PATH/containers/fmriprep_23.2.3.sif" # or .img
 my_input=$BIDS_DIR
-my_output="${OUTPUT_DIR}/fmriprep_all"
+my_output="${OUTPUT_DIR}/fmriprep"
 
 my_templateflow_path="$TOOLS_PATH/templateflow"
-fs_dir='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/2024-07-09_freesurfer'  # Path to freesurfer output folder containing one subfolder for each session
 my_licence_fs="$REPOS_DIR/license.txt" # get your license by registering here : https://surfer.nmr.mgh.harvard.edu/registration.html
 
 
 TMP_SCRIPT=$(mktemp /tmp/slurm-frmriprep_XXXXXX.sh)
+
 
 # Write the SLURM script to the temporary file
 cat <<EOT > $TMP_SCRIPT
@@ -59,7 +66,6 @@ if [ "\$longitudinal" = true ]; then
 else
     if ! participants=\$(bash "$REPOS_DIR/utils/get_all_subs.sh" "$my_input"); then
         printf "Error fetching participants\n" >&2
-    echo -e "Valid subjects are :\n\$participants\n"
         continue
     fi
 
@@ -75,7 +81,7 @@ fi
 
 
 # Make sure array jobs have different work dir per SESSIONS if there are sessions
-my_work=$REPOS_DIR/fmriprep_work/\$session
+my_work=$my_output/work/\$session
 if [ ! -d \$my_work ]; then
     mkdir -p \$my_work
 fi
@@ -106,9 +112,5 @@ EOT
 # Submit the scipt as a slurm job
 sbatch $TMP_SCRIPT
 
-
-# Uncomment to automatically remove the temporary script 
-# sleep 5s
-# rm $TMP_SCRIPT
 
 

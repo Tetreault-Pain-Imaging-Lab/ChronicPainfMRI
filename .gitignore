@@ -5,3 +5,6 @@ recon-all_help.txt
 nilearn*
 sub_ses_pairs.txt
 fmriprep_work/
+config_long.sh
+config_test.sh
+config_cross.sh

@@ -4,33 +4,40 @@
 
 # Example usage: bash /home/ludoal/scratch/ChronicPainfMRI/utils/install_tools_cc.sh /home/ludoal/projects/def-pascalt-ab/ludoal/dev_tpil/tools /home/ludoal/scratch/ENV
 
-# Function to display script usage information
-display_help() {
-    echo "This script installs the needed tools for this fMRI analysis in a folder given as argument"
-    echo "Usage: $(basename "$0") [tools_folder] [env_path] [options]"
-    echo "Options:"
-    echo "  --help    Display the help message"
-}
 
-# Check if the script is run without arguments
-if [ $# -eq 0 ]; then
-    echo "Error: Not enough arguments."
-    display_help
+
+# Define the path to the configuration file
+DEFAULT_CONFIG_FILE="config_ex.sh"
+
+# Check if an argument is provided
+if [ "$#" -eq 1 ]; then
+    CONFIG_FILE="$1"
+else
+    CONFIG_FILE="$DEFAULT_CONFIG_FILE"
+fi
+
+# Check if the config file exists
+if [ -f "$CONFIG_FILE" ]; then
+    # Source the config file
+    source "$CONFIG_FILE"
+    echo "Using config file: $CONFIG_FILE"
+else
+    echo "Error: Config file '$CONFIG_FILE' not found."
     exit 1
 fi
 
 fmriprep_img="fmriprep_23.2.3.sif"
-tools_path="$1"
-utils_path="$(dirname "$(realpath "$0")")"
-env_path="$2"
+tools_path=$TOOLS_PATH
+utils_path="$REPOS_DIR/utils"
+env_path="$tools_path/ENV"
+
+# Load the required module
+module load apptainer
 
 ## FMRIPREP
 
 # Find the fmriprep_img and save the result in a variable
 file_path=$(find "$tools_path" -type f -name "$fmriprep_img" -print -quit)
-
-# Load the required module
-module load apptainer
 
 if [ -n "$file_path" ]; then
     echo "File $fmriprep_img exists at: $file_path, moving it to $tools_path/containers "
@@ -73,17 +80,7 @@ fi
 ## TEMPLATEFLOW
 
 # create a virtual environment to install the templateflow package
-cd $(dirname $(dirname "$0"))
-requirements_file=$(find . -name templateflow_requirements.txt) 
-
-# Check if the file was found
-if [[ -z "$requirements_file" ]]; then
-    echo "requirements.txt not found."
-    exit 1
-else
-    echo " the requirements file is at : $requirements_file"
-fi
-
+requirements_file="$REPOS_DIR/templateflow_requirements.txt"
 module load python
 ENVDIR="$env_path/templateflow"
 virtualenv --no-download $ENVDIR
@@ -95,22 +92,3 @@ pip install -v -r $requirements_file
 # Downloads the templates used in fmriprep
 python $utils_path/load_templates.py 
 
-
-## Virtual environment for python scripts
-
-requirements_file=$(find . -name fmri_requirements.txt) 
-
-# Check if the file was found
-if [[ -z "$requirements_file" ]]; then
-    echo "requirements.txt not found."
-    exit 1
-else
-    echo " the requirements file for fMRI python scripts is at : $requirements_file"
-fi
-
-module load python
-ENVDIR="$env_path/fMRI"
-virtualenv --no-download $ENVDIR
-source $ENVDIR/bin/activate
-pip install --no-index --upgrade pip
-pip install -v -r $requirements_file 

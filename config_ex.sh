@@ -17,21 +17,24 @@ TOOLS_PATH="/home/ludoal/projects/def-pascalt-ab/ludoal/dev_tpil/tools"
 #       -participants.tsv :
 #       -participants.json : necessary for BIDS format (see BIDS documentation for what it should contain)
 #       -dataset_description.json : necessary for BIDS format
-BIDS_DIR="/home/ludoal/scratch/tpil_data/test_cross_sect/data"
+BIDS_DIR="/home/ludoal/scratch/tpil_data/BIDS_longitudinal/complete_dataset_raw"
 
 # The results will be stored in folders named after the pipeline that produced them under the OUTPUT_DIR
-OUTPUT_DIR="/home/ludoal/scratch/tpil_data/test_cross_sect"
+OUTPUT_DIR="/home/ludoal/scratch/tpil_data/BIDS_longitudinal"
 
-# The session labels of your longitudinal data
-# SESSIONS=("v1",  "v2", "v3")
-# N_SESSIONS=${#SESSIONS[@]} 
 
-SESSIONS=()
-N_SESSIONS=1
-
+# You will need a freesurfer license file for fmriprep 
+LICENSE_FILE="/home/ludoal/scratch/ChronicPainfMRI/license.txt"
 
 # If your dataset is cross sectionnal, set to false
-longitudinal=false
+longitudinal=true
+
+# The session labels of your longitudinal data
+SESSIONS=("v1" "v2")
+N_SESSIONS=${#SESSIONS[@]} 
+
+
+
 
 
 # bids_filter files should be created for your dataset. See the README of the bids_filters folder
@@ -64,12 +67,12 @@ MAIL="ludo.a.levesque@gmail.com"  # optionnal, remove the `#SBATCH --mail` lines
 SLURM_OUT="$REPOS_DIR/outputs" 
 
 # fmriprep ressources allocation (used in for the script /tractoflow/run_tractoflow_cc.sh)
-fmriprep_ressources="#SBATCH --job-name=fmriprep_cross
-#SBATCH --time=10:00:00
+fmriprep_ressources="#SBATCH --job-name=fmriprep_all
+#SBATCH --time=20:00:00
 #SBATCH --nodes=1
-#SBATCH --cpus-per-task=32
-#SBATCH --mem=10G
-#SBATCH --output=\"$SLURM_OUT/fmriprep_cross/%slurm-%A-%a.out\"   
+#SBATCH --cpus-per-task=40
+#SBATCH --mem=0
+#SBATCH --output=\"$SLURM_OUT/fmriprep_long/%slurm-%A-%a.out\"   
 #SBATCH --mail-user=$MAIL
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
@@ -77,6 +80,22 @@ fmriprep_ressources="#SBATCH --job-name=fmriprep_cross
 #SBATCH --mail-type=REQUEUE
 #SBATCH --array=0-$((N_SESSIONS-1))"
 
+# freesurfer ressources allocation (used in freesurfer_longitudinal.sh)
+freesurfer_ressources="#SBATCH --job-name=freesurfer_long
+#SBATCH --time=10:00:00
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=3700M
+#SBATCH --output=\"$SLURM_OUT/freesurfer_long/%slurm-%A-%a.out\"   
+#SBATCH --mail-user=$MAIL
+#SBATCH --mail-type=BEGIN
+#SBATCH --mail-type=END
+#SBATCH --mail-type=FAIL
+#SBATCH --mail-type=REQUEUE"
+
 
 # Some variables might be added here by some scripts to speed up processing:
-fs_dir='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/2024-07-09_freesurfer/v1'  # Path to freesurfer output folder containing one subfolder for each session
+fs_dir='/home/ludoal/scratch/tpil_data/BIDS_longitudinal/2024-07-09_freesurfer'  # Path to freesurfer output folder containing one subfolder for each session
+participants_v1=" 002 006 007 008 010 012 013 014 015 016 017 019 021 022 023 024 025 027 029 030 031 032 034 036 037 038 039 040 041 042 046 047 048 049 050 051 052 053 054 055 056 057 058 059 060 061 062 063 064 065"
+participants_v2=" 002 006 007 010 012 013 014 015 016 017 019 021 022 023 024 025 027 029 030 031 032 034 035 036 038 040 041 042 046 047 048 049 050 051 052 053 054 055 056 058 059 060 061 062 063 064 065"
+participants_v3=" 002 004 006 007 010 012 013 014 015 017 019 021 022 023 024 025 027 029 030 031 032 034 035 036 038 040 041 042 046 047 048 049 050 051 052 053 054 055 056 057 058 059 060 061 062 063 064 065"
