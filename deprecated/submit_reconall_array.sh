@@ -3,9 +3,9 @@
 
     ## Directories and paths
 # your BIDS dataset directory
-export BIDS_DIR="/home/ludoal/scratch/tpil_data/BIDS_longitudinal/data_raw_for_test"  
-# Your desired FreeSurfer output directory (to run fmriprep one session at a time, the freesurfer output folder needs to have one subfolderper session)
-export OUTPUT_DIR="/home/ludoal/scratch/tpil_data/BIDS_longitudinal/2024-06-12_freesurfer" 
+export BIDS_DIR="/home/ludoal/scratch/tpil_data/BIDS_longitudinal/complete_dataset_raw"  
+# Your desired FreeSurfer output directory (to run fmriprep one session at a time, the freesurfer output folder needs to have one subfolder per session)
+export OUTPUT_DIR="/home/ludoal/scratch/tpil_data/BIDS_longitudinal/2024-07-09_freesurfer" 
 # Path to your FreeSurfer image
 export SINGULARITY_IMG="/home/ludoal/projects/def-pascalt-ab/ludoal/dev_tpil/tools/containers/freesurfer_7.2.0.sif" 
 # Path to your FreeSurfer license file

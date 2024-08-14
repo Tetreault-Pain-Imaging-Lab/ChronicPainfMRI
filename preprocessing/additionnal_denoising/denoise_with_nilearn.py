@@ -29,6 +29,7 @@ import argparse
 import nibabel as nib
 from nilearn.maskers import NiftiMasker
 from nilearn.interfaces.fmriprep import load_confounds_strategy
+
 import logging
 
 def setup_logging():
