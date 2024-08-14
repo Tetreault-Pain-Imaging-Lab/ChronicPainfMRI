@@ -1,5 +1,7 @@
 #  <img src="assets/logo.png" alt="logo" width="50"/>   ChronicPainfMRI  
-**ChronicPainfMRI** is a repository that aims to facilitate the reproduction of the fMRI processing and analysis we did in our lab, on different datasets. It contains code to easily run the same pipelines we normally use and with the same options. One of the strong points of this repository is that it allows to easily run fmriprep on longitudinal data.
+**ChronicPainfMRI** is a repository that aims to facilitate the reproduction of the fMRI preprocessing we did in our lab, on different datasets. It contains code to easily run the same pipelines we normally use and with the same options. One of the strong points of this repository is that it allows to easily run fmriprep on longitudinal data.
+
+For longitudinal data, we run Freesurfer beforehand and organize the output so that fmriprep can use the outputs that correspond to the right session. For cross-sectionnal data, fmriprep is usually easier to run and it is not necessary to run Freesurfer seperately beforehand, but it's still possible to use the code in this repository.
 
 The dataset we originally used to develop this repository includes 27 chronic low back pain patients and 25 controls scanned at three timepoints (0, 2, and 4 months) between April 2021 and July 2022. For detailed dataset and acquisition information, refer to our [dataset documentation](https://github.com/Tetreault-Pain-Imaging-Lab/dataset_LongitudinalNoTreatement).
 
@@ -71,6 +73,7 @@ To run the anlysis on a new dataset, you need to create your config file. In thi
 | `MAIL`                 | Email address for job notifications. Optional; remove `#SBATCH --mail` lines if not needed.                                                  |
 | `SLURM_OUT`            | Path for storing SLURM job output logs.                                                                                                       |
 | `fmriprep_ressources`| SLURM parameters for the `run_fmriprep_cc.sh` script, including job name, time, nodes, CPUs per task, memory, output log path, and email notifications. |
+| `freesurfer_ressources` |  SLURM parameters for the `run_freesurfer_cc.sh` script   |
 
 
 Creating multiple config file with evocative names can allow you to quickly switch between two dataset or two configurations of your data without changing anything in the other scripts. After creating this file you can run any other script of this repository this way:
@@ -80,23 +83,9 @@ bash some_script_path your_config_file_path
 ```
 If you only use one config file you can name it `config_ex.sh`, since it is the file that will be used as default if no config file is specified as argument when calling a script. Or you could change the `DEFAULT_CONFIG_FILE="config_ex.sh" ` line in all the scripts to use your config file by default.
 
-## Analysis Workflow
-
-<img src="assets/diag_analysis.png" alt="diagram2" width="500"/>   
-
-### Preprocessing and tractogram generation
-
-In the [tractoflow](https://github.com/Tetreault-Pain-Imaging-Lab/ChronicPainDWI/tree/main/preprocessing) folder you will find scripts and information to run the first steps of the analysis. The main tool used for this part is [TractoFlow](https://tractoflow-documentation.readthedocs.io/en/latest/index.html) which does the preprocessing of the DWI files and generates tractograms.
 
 
-### Bundle segmentation 
 
-The second step is bundle segmentation. In the [bundleseg](https://github.com/Tetreault-Pain-Imaging-Lab/ChronicPainDWI/tree/main/bundleseg) folder are scripts and information for the segmentation of the bundles computed using TractoFlow. The main tool used for this part is  the [RecobundlesX pipeline](https://github.com/scilus/rbx_flow) 
-
-
-### Tractometry 
-
-The third step is tractometry which is done using another scilus lab tool : [tractometry_flow](https://github.com/scilus/tractometry_flow) We encontered an issue with tractometry_flow that might be fixed eventually, but be aware that some bundles might have too few streamlines and this can lead to the pipeline crashing. To resolve this you can remove the bundles that cause the issue from your data.
 
 
 
