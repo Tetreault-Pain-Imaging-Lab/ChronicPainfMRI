@@ -3,11 +3,16 @@
 This folder contains `fmripreps_bids_filter.json` files, which are used by [fMRIPrep](https://fmriprep.org) to specify and process only certain files from your dataset.
 The `fmripreps_bids_filter.json` files allow you to define criteria to filter your BIDS-compliant dataset. This is particularly useful when you want to focus on specific sessions, tasks, or data types without processing the entire dataset.
 Here, we want to run fmriprep one session at a time because we don't have the same amount of subjects every session which caused a crash. We use a different bids filter file for every visit. 
-The files present in this folder are specific to our analysis. To run the fmriprep on new data, you should create your own bids filters. 
+The files present in this folder are specific to our analysis. To run the fmriprep on new data, you should create your own bids filters but keep the same name structure : 
+
+`fmripreps_bids_filter_{SESSION TAG}.json` for longitudinal data
+
+`fmripreps_bids_filter.json` for cross-sectionnal data
+
 
 ## Example of a BIDS Filter File
 
-Below is an example of a `fmripreps_bids_filter.json` file:
+Below is an example of a `fmripreps_bids_filter_{SESSION TAG}.json` file:
 
 ```json
 {
